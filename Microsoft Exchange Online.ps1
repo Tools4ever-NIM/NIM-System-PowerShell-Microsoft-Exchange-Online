@@ -48,6 +48,9 @@ if (!(Get-Module -ListAvailable -Name 'ExchangeOnlineManagement')) {
     Install-Module -Name 'ExchangeOnlineManagement' -Scope 'CurrentUser' -Force
 }
 
+$Log_MaskableKeys = @(
+    'password'
+)
 
 #
 # System functions
