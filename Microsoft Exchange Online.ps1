@@ -932,6 +932,61 @@ function Idm-DistributionGroupMemberCreate {
     Log info "Done"
 }
 
+function Idm-DistributionGroupMembersUpdate {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            semantics = 'memberships-update'
+            parentTable = 'DistributionGroups'
+        #    parameters = @(
+        #        @{ name = 'group';  allowance = 'mandatory'  }
+        #        @{ name = 'add';    allowance = 'mandatory'  }
+        #        @{ name = 'remove'; allowance = 'mandatory'  }
+        #        @{ name = '*';      allowance = 'prohibited' }
+        #    )
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        # Force arrays
+        $function_params.add    = @($function_params.add)
+        $function_params.remove = @($function_params.remove)
+        
+        if($function_params.add.count -gt 0) {
+            
+            foreach($add in $function_params.add) {
+                Idm-DistributionGroupMemberCreate -SystemParams $SystemParams -FunctionParams "{ \"GroupGUID\": \"${$function_parms.group}\", \"Guid\": \"${$add}\"}"
+            }
+            
+        }
+        
+        if($function_params.remove.count -gt 0) {
+                Idm-DistributionGroupMemberDelete -SystemParams $SystemParams -FunctionParams "{ \"GroupGUID\": \"${$function_parms.group}\", \"Guid\": \"${$remove}\"}"
+        }
+    }
+
+    Log info "Done"
+}
 function Idm-DistributionGroupMemberDelete {
     param (
         # Operations
