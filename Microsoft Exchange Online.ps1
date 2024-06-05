@@ -37,6 +37,7 @@
 
 $Global:EXOManagementMinVersion = '3.0.0.0'
 $Global:Mailboxes = [System.Collections.ArrayList]@()
+$Global:DistributionGroups = [System.Collections.ArrayList]@()
 
 if (!(Get-Module -ListAvailable -Name 'ExchangeOnlineManagement')) {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -215,6 +216,97 @@ $Properties = @{
 		@{ name = 'WhenChangedUTC';		 														}
 		@{ name = 'WhenCreated';		 														}
 		@{ name = 'WhenCreatedUTC';		 														}
+	)
+    DistributionGroup = @(
+		@{ name = 'AcceptMessagesOnlyFrom';						options = @('set')						}
+		@{ name = 'AcceptMessagesOnlyFromDLMembers';			options = @('set')						}
+		@{ name = 'AcceptMessagesOnlyFromSendersOrMembers';		options = @('set')						}
+		@{ name = 'AddressListMembership';					 											}
+		@{ name = 'AdministrativeUnits';					 											}
+		@{ name = 'Alias';										options = @('default','enable','set')	}
+		@{ name = 'ArbitrationMailbox';					 												}
+		@{ name = 'BccBlocked';							                            					}
+		@{ name = 'BypassModerationFromSendersOrMembers';		options = @('set')						}
+		@{ name = 'BypassNestedModerationEnabled';				options = @('set')						}
+		@{ name = 'CustomAttribute1';							options = @('set')						}
+		@{ name = 'CustomAttribute10';							options = @('set')						}
+		@{ name = 'CustomAttribute11';							options = @('set')						}
+		@{ name = 'CustomAttribute12';							options = @('set')						}
+		@{ name = 'CustomAttribute13';							options = @('set')						}
+		@{ name = 'CustomAttribute14';							options = @('set')						}
+		@{ name = 'CustomAttribute15';							options = @('set')						}
+		@{ name = 'CustomAttribute2';							options = @('set')						}
+		@{ name = 'CustomAttribute3';							options = @('set')						}
+		@{ name = 'CustomAttribute4';							options = @('set')						}
+		@{ name = 'CustomAttribute5';							options = @('set')						}
+		@{ name = 'CustomAttribute6';							options = @('set')						}
+		@{ name = 'CustomAttribute7';							options = @('set')						}
+		@{ name = 'CustomAttribute8';							options = @('set')						}
+		@{ name = 'CustomAttribute9';							options = @('set')						}
+		@{ name = 'Description';				 														}
+		@{ name = 'DisplayName';								options = @('default','enable','set')	}
+		@{ name = 'DistinguishedName';					 												}
+		@{ name = 'EmailAddresses';								options = @('default','set')			}
+		@{ name = 'EmailAddressPolicyEnabled';															}
+		@{ name = 'ExchangeObjectId';					 												}
+		@{ name = 'ExchangeVersion';					 												}
+		@{ name = 'ExtensionCustomAttribute1';					options = @('set')						}
+		@{ name = 'ExtensionCustomAttribute2';					options = @('set')						}
+		@{ name = 'ExtensionCustomAttribute3';					options = @('set')						}
+		@{ name = 'ExtensionCustomAttribute4';					options = @('set')						}
+		@{ name = 'ExtensionCustomAttribute5';					options = @('set')						}
+		@{ name = 'GrantSendOnBehalfTo';						options = @('set')						}
+		@{ name = 'GroupType';					 														}
+        @{ name = 'Guid';										options = @('default','key')			}		
+		@{ name = 'HiddenFromAddressListsEnabled';				options = @('set')						}
+        @{ name = 'HiddenGroupMembershipEnabled';				options = @('set')						}
+		@{ name = 'Id';											options = @('default')					}
+		@{ name = 'Identity';					 														}
+		@{ name = 'IsDirSynced';																		}
+		@{ name = 'IsValid';				            	 											}
+		@{ name = 'LastExchangeChangedTime';															}
+		@{ name = 'LegacyExchangeDN';					 												}
+		@{ name = 'MailTip';									options = @('set')						}
+		@{ name = 'MailTipTranslations';						options = @('set')						}
+		@{ name = 'ManagedBy';																	        }
+		@{ name = 'MaxReceiveSize';								options = @('set')						}
+		@{ name = 'MaxSendSize';								options = @('set')						}
+		@{ name = 'MemberDepartRestriction';    														}
+		@{ name = 'MemberJoinRestriction';          													}
+		@{ name = 'MigrationToUnifiedGroupInProgress';			                                        }
+		@{ name = 'ModeratedBy';								options = @('set')						}
+		@{ name = 'ModerationEnabled';							options = @('set')						}
+		@{ name = 'Name';										options = @('set')						}
+		@{ name = 'ObjectCategory';					 													}
+		@{ name = 'ObjectClass';					 													}
+		@{ name = 'OrganizationalUnit';					 												}
+        @{ name = 'OrganizationalUnitRoot';					 											}
+		@{ name = 'OrganizationId';					 													}
+		@{ name = 'OriginatingServer';          					 									}
+		@{ name = 'PoliciesExcluded';					 												}
+		@{ name = 'PoliciesIncluded';					 												}
+		@{ name = 'PrimarySmtpAddress';							options = @('default','set')			}
+		@{ name = 'RecipientType';					 													}
+		@{ name = 'RecipientTypeDetails';					 											}
+		@{ name = 'RejectMessagesFrom';							options = @('set')						}
+		@{ name = 'RejectMessagesFromDLMembers';				options = @('set')						}
+		@{ name = 'RejectMessagesFromSendersOrMembers';			options = @('set')						}
+		@{ name = 'ReportToManagerEnabled';					 											}
+		@{ name = 'ReportToOriginatorEnabled';  			 											}
+		@{ name = 'SamAccountName';								options = @('enable','set')				}
+		@{ name = 'SendModerationNotifications';				options = @('set')						}
+        @{ name = 'SendOofMessageToOriginatorEnabled';				options = @('set')						}
+		@{ name = 'UMDtmfMap';					 														}
+		@{ name = 'WhenChanged';					 													}
+		@{ name = 'WhenChangedUTC';					 													}
+		@{ name = 'WhenCreated';					 													}
+		@{ name = 'WhenCreatedUTC';					 													}
+		@{ name = 'WindowsEmailAddress';						options = @('set')						}
+	)
+    DistributionGroupMember = @(
+		@{ name = 'GroupGuid';						options = @('default','set')		}
+		@{ name = 'Guid';			options = @('default','set')						}
+		@{ name = 'RecipientType';		                                                }
 	)
 	Mailbox = @(
 		@{ name = 'AcceptMessagesOnlyFrom';						options = @('set')						}
@@ -636,6 +728,257 @@ function Idm-CASMailboxSet {
     Log info "Done"
 }
 
+function Idm-DistributionGroupsRead {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+	$Class = 'DistributionGroup'
+
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        Get-ClassMetaData -SystemParams $SystemParams -Class $Class -CanFilter $true
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $call_params = @{
+            ResultSize = 'unlimited'
+        }
+
+        $properties = $function_params.properties
+
+        if ($properties.length -eq 0) {
+            $properties = ($Global:Properties.$Class | Where-Object { $_.options.Contains('default') }).name
+        }
+
+        # Assure key is the first column
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+        $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
+
+        try {
+            # https://learn.microsoft.com/en-us/powershell/module/exchange/get-exomailbox?view=exchange-ps
+            #
+            # Cmdlet availability:
+            # v Cloud
+			
+            LogIO info "Get-MsExchangeDistributionGroup" -In @call_params
+			
+			# EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
+            $groups = Get-MsExchangeDistributionGroup @call_params | Select-Object $properties
+			$groups
+
+			# Push group GUIDs into a global collection
+			$Global:DistributionGroups.Clear()
+			foreach($grp in $groups) {
+				[void]$Global:DistributionGroups.Add( @{ Identity = $grp.$key } )
+			}
+            log info ($Global:DistributionGroups | ConvertTo-Json)
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log info "Done"
+}
+
+function Idm-DistributionGroupMembersRead {
+	param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+	
+	$Class = 'DistributionGroupMember'
+
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        Get-ClassMetaData -SystemParams $SystemParams -Class $Class
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        
+
+        $properties = $function_params.properties
+
+        if ($properties.length -eq 0) {
+            $properties = ($Global:Properties.$Class | Where-Object { $_.options.Contains('default') }).name
+        }
+
+        # Assure key is the first column
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+        $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
+
+        try {
+            # https://learn.microsoft.com/en-us/powershell/module/exchange/get-distributiongroupmember?view=exchange-ps
+            #
+            # Cmdlet availability:
+            # v Cloud
+			$i = $Global:DistributionGroups.count
+			
+			foreach($grp in $Global:DistributionGroups) {
+                $call_params = @{
+                    Identity = $grp.Identity
+                    ResultSize = 'unlimited'
+                }
+                
+                LogIO info "Get-MsExchangeDistributionGroupMember" -In @call_params
+                $result = Get-MsExchangeDistributionGroupMember @call_params
+                
+                foreach($member in $result) {
+                    [PSCustomObject]@{
+                        GroupGuid = $grp.Identity
+                        Guid = $member.Guid
+                        RecipientType = $member.RecipientType
+                    }
+                }
+				
+				if(($i -= 1) % 100 -eq 0) {
+					Log debug ("[Progress][$($Class)] $($i) remaining distribution groups to search")
+				}
+			}
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log info "Done"
+}
+
+function Idm-DistributionGroupMemberCreate {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            semantics = 'create'
+            parameters = @(
+                @{ name = "GroupGuid";  allowance = 'mandatory'  }
+                @{ name = "Guid"; allowance = 'mandatory'  }
+                @{ name = '*';      allowance = 'prohibited' }
+            )
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $call_params = @{
+            Identity = $function_params["GroupGuid"]
+            Member = $function_params["Guid"]
+        }
+        LogIO info "Add-MsExchangeDistributionGroupMember" -In @call_params
+               Add-MsExchangeDistributionGroupMember @call_params -Confirm:$false >$null 2>&1
+        
+        $rv = [PSCustomObject]@{
+            GroupGuid = $function_params["GroupGuid"]
+            Guid = $function_params["Guid"]
+        }
+        LogIO info "Add-MsExchangeDistributionGroupMember" -Out $rv
+        
+        $rv
+    }
+
+    Log info "Done"
+}
+
+function Idm-DistributionGroupMemberDelete {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            semantics = 'delete'
+            parameters = @(
+                @{ name = "GroupGuid";  allowance = 'mandatory'  }
+                @{ name = "Guid"; allowance = 'mandatory'  }
+                @{ name = '*';      allowance = 'prohibited' }
+            )
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $call_params= @{
+            Identity = $function_params["GroupGuid"]
+            Member = $function_params["Guid"]
+        }
+
+        LogIO info "Remove-MsExchangeDistributionGroupMember" -In @call_params
+            Remove-MsExchangeDistributionGroupMember @call_params -Confirm:$false >$null 2>&1
+        LogIO info "Remove-MsExchangeDistributionGroupMember"
+    }
+
+    Log info "Done"
+}
 
 function Idm-MailboxesRead {
     param (
