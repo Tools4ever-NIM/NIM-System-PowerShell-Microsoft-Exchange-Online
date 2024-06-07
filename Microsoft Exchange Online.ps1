@@ -223,10 +223,10 @@ $Properties = @{
 		@{ name = 'AcceptMessagesOnlyFromSendersOrMembers';		options = @('set')						}
 		@{ name = 'AddressListMembership';					 											}
 		@{ name = 'AdministrativeUnits';					 											}
-		@{ name = 'Alias';										options = @('default','enable','set')	}
-		@{ name = 'ArbitrationMailbox';					 												}
-		@{ name = 'BccBlocked';							                            					}
-		@{ name = 'BypassModerationFromSendersOrMembers';		options = @('set')						}
+		@{ name = 'Alias';										options = @('default','create','set')	}
+		@{ name = 'ArbitrationMailbox';					 		options = @('create','set')	            }
+		@{ name = 'BccBlocked';							        options = @('create','set')	            }
+		@{ name = 'BypassModerationFromSendersOrMembers';		options = @('create','set')						}
 		@{ name = 'BypassNestedModerationEnabled';				options = @('set')						}
 		@{ name = 'CustomAttribute1';							options = @('set')						}
 		@{ name = 'CustomAttribute10';							options = @('set')						}
@@ -243,10 +243,10 @@ $Properties = @{
 		@{ name = 'CustomAttribute7';							options = @('set')						}
 		@{ name = 'CustomAttribute8';							options = @('set')						}
 		@{ name = 'CustomAttribute9';							options = @('set')						}
-		@{ name = 'Description';				 														}
-		@{ name = 'DisplayName';								options = @('default','enable','set')	}
+		@{ name = 'Description';				 				options = @('create','set')	            }
+		@{ name = 'DisplayName';								options = @('default','create','set')	}
 		@{ name = 'DistinguishedName';					 												}
-		@{ name = 'EmailAddresses';								options = @('default','set')			}
+		@{ name = 'EmailAddresses';								options = @('set')          			}
 		@{ name = 'EmailAddressPolicyEnabled';															}
 		@{ name = 'ExchangeObjectId';					 												}
 		@{ name = 'ExchangeVersion';					 												}
@@ -259,7 +259,7 @@ $Properties = @{
 		@{ name = 'GroupType';					 														}
         @{ name = 'Guid';										options = @('default','key')			}		
 		@{ name = 'HiddenFromAddressListsEnabled';				options = @('set')						}
-        @{ name = 'HiddenGroupMembershipEnabled';				options = @('set')						}
+        @{ name = 'HiddenGroupMembershipEnabled';				options = @('create','set')			    }
 		@{ name = 'Id';											options = @('default')					}
 		@{ name = 'Identity';					 														}
 		@{ name = 'IsDirSynced';																		}
@@ -268,15 +268,15 @@ $Properties = @{
 		@{ name = 'LegacyExchangeDN';					 												}
 		@{ name = 'MailTip';									options = @('set')						}
 		@{ name = 'MailTipTranslations';						options = @('set')						}
-		@{ name = 'ManagedBy';																	        }
+		@{ name = 'ManagedBy';									options = @('create','set')			    }
 		@{ name = 'MaxReceiveSize';								options = @('set')						}
 		@{ name = 'MaxSendSize';								options = @('set')						}
-		@{ name = 'MemberDepartRestriction';    														}
-		@{ name = 'MemberJoinRestriction';          													}
+		@{ name = 'MemberDepartRestriction';    				options = @('create','set')			    }
+		@{ name = 'MemberJoinRestriction';          			options = @('create','set')			    }
 		@{ name = 'MigrationToUnifiedGroupInProgress';			                                        }
-		@{ name = 'ModeratedBy';								options = @('set')						}
-		@{ name = 'ModerationEnabled';							options = @('set')						}
-		@{ name = 'Name';										options = @('set')						}
+		@{ name = 'ModeratedBy';								options = @('create','set')			    }
+		@{ name = 'ModerationEnabled';							options = @('create','set')			    }
+		@{ name = 'Name';										options = @('create','set')     		}
 		@{ name = 'ObjectCategory';					 													}
 		@{ name = 'ObjectClass';					 													}
 		@{ name = 'OrganizationalUnit';					 												}
@@ -285,7 +285,7 @@ $Properties = @{
 		@{ name = 'OriginatingServer';          					 									}
 		@{ name = 'PoliciesExcluded';					 												}
 		@{ name = 'PoliciesIncluded';					 												}
-		@{ name = 'PrimarySmtpAddress';							options = @('default','set')			}
+		@{ name = 'PrimarySmtpAddress';							options = @('default','create','set')   }
 		@{ name = 'RecipientType';					 													}
 		@{ name = 'RecipientTypeDetails';					 											}
 		@{ name = 'RejectMessagesFrom';							options = @('set')						}
@@ -293,9 +293,10 @@ $Properties = @{
 		@{ name = 'RejectMessagesFromSendersOrMembers';			options = @('set')						}
 		@{ name = 'ReportToManagerEnabled';					 											}
 		@{ name = 'ReportToOriginatorEnabled';  			 											}
-		@{ name = 'SamAccountName';								options = @('enable','set')				}
-		@{ name = 'SendModerationNotifications';				options = @('set')						}
-        @{ name = 'SendOofMessageToOriginatorEnabled';				options = @('set')						}
+		@{ name = 'SamAccountName';								options = @('create','set')				}
+		@{ name = 'SendModerationNotifications';				options = @('create','set')			    }
+        @{ name = 'SendOofMessageToOriginatorEnabled';			options = @('set')						}
+        @{ name = 'Type';			                            options = @('create')   				}
 		@{ name = 'UMDtmfMap';					 														}
 		@{ name = 'WhenChanged';					 													}
 		@{ name = 'WhenChangedUTC';					 													}
@@ -788,7 +789,219 @@ function Idm-DistributionGroupsRead {
 			foreach($grp in $groups) {
 				[void]$Global:DistributionGroups.Add( @{ Identity = $grp.$key } )
 			}
-            log info ($Global:DistributionGroups | ConvertTo-Json)
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log info "Done"
+}
+
+function Idm-DistributionGroupCreate {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    $Class = 'DistributionGroup'
+	
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            semantics = 'create'
+            parameters = @(
+                $Global:Properties.$Class | Where-Object { $_.name -in @('Name','Type') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'mandatory' }
+                }    
+                $Global:Properties.$Class | Where-Object { $_.options.Contains('create') -and !$_.options.Contains('key') -and $_.name -notin @('Name','Type') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'optional' }
+                }
+                $Global:Properties.$Class | Where-Object { $_.options.Contains('key') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'prohibited' }
+                }
+            )
+            
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $call_params = $function_params
+
+        try {
+            # https://learn.microsoft.com/en-us/powershell/module/exchange/new-distributiongroup?view=exchange-ps
+            #
+            # Cmdlet availability:
+            # v On-premises
+            # v Cloud
+
+            LogIO info "New-MsExchangeDistributionGroup" -In @call_params
+                $rv = New-MsExchangeDistributionGroup @call_params
+            LogIO info "New-MsExchangeDistributionGroup" -Out $rv
+
+            $rv
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log info "Done"
+}
+
+function Idm-DistributionGroupUpdate {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    $Class = 'DistributionGroup'
+	
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            semantics = 'update'
+            parameters = @(
+                @{ name = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name; allowance = 'mandatory' }
+                $Global:Properties.$Class | Where-Object { $_.options.Contains('set') -and !$_.options.Contains('key') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'optional' }
+                }
+                $Global:Properties.$Class | Where-Object { !$_.options.Contains('key') -and !$_.options.Contains('set') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'prohibited' }
+                }
+            )
+            
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+        
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+
+        $call_params = @{
+            Identity = $function_params.$key
+        }
+
+        $function_params.Remove($key)
+
+        $call_params += $function_params
+
+        try {
+            # https://learn.microsoft.com/en-us/powershell/module/exchange/set-distributiongroup?view=exchange-ps
+            #
+            # Cmdlet availability:
+            # v On-premises
+            # v Cloud
+
+            LogIO info "Set-MsExchangeDistributionGroup" -In @call_params
+                $rv = Set-MsExchangeDistributionGroup @call_params
+            LogIO info "Set-MsExchangeDistributionGroup" -Out $rv
+
+            $rv
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log info "Done"
+}
+
+function Idm-DistributionGroupDelete {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+	$Class = 'DistributionGroup'
+
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            semantics = 'delete'
+            parameters = @(
+                @{ name = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name; allowance = 'mandatory' }
+
+                $Global:Properties.$Class | Where-Object { !$_.options.Contains('key') -and !$_.options.Contains('disable') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'prohibited' }
+                }
+
+               #@{ name = '*'; allowance = 'optional' }
+            )
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+
+        $call_params = @{
+            Identity = $function_params.$key
+            Confirm  = $false   # Be non-interactive
+        }
+
+        $function_params.Remove($key)
+
+        $call_params += $function_params
+
+        try {
+            # https://learn.microsoft.com/en-us/powershell/module/exchange/remove-distributiongroup?view=exchange-ps
+            #
+            # Cmdlet availability:
+            # v On-premises
+            # v Cloud
+
+            LogIO info "Remove-MsExchangeDistributionGroup" -In @call_params
+                $rv = Remove-MsExchangeDistributionGroup @call_params
+            LogIO info "Disable-MsExchangeDistributionGroup" -Out $rv
+
+            $rv
         }
         catch {
             Log error "Failed: $_"
@@ -932,61 +1145,6 @@ function Idm-DistributionGroupMemberCreate {
     Log info "Done"
 }
 
-function Idm-DistributionGroupMembersUpdate {
-    param (
-        # Operations
-        [switch] $GetMeta,
-        # Parameters
-        [string] $SystemParams,
-        [string] $FunctionParams
-    )
-
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
-
-    if ($GetMeta) {
-        #
-        # Get meta data
-        #
-
-        @{
-            semantics = 'memberships-update'
-            parentTable = 'DistributionGroups'
-        #    parameters = @(
-        #        @{ name = 'group';  allowance = 'mandatory'  }
-        #        @{ name = 'add';    allowance = 'mandatory'  }
-        #        @{ name = 'remove'; allowance = 'mandatory'  }
-        #        @{ name = '*';      allowance = 'prohibited' }
-        #    )
-        }
-    }
-    else {
-        #
-        # Execute function
-        #
-        $system_params   = ConvertFrom-Json2 $SystemParams
-        $function_params = ConvertFrom-Json2 $FunctionParams
-
-        Open-MsExchangeSession $system_params
-
-        # Force arrays
-        $function_params.add    = @($function_params.add)
-        $function_params.remove = @($function_params.remove)
-        
-        if($function_params.add.count -gt 0) {
-            
-            foreach($add in $function_params.add) {
-                Idm-DistributionGroupMemberCreate -SystemParams $SystemParams -FunctionParams "{ \"GroupGUID\": \"${$function_parms.group}\", \"Guid\": \"${$add}\"}"
-            }
-            
-        }
-        
-        if($function_params.remove.count -gt 0) {
-                Idm-DistributionGroupMemberDelete -SystemParams $SystemParams -FunctionParams "{ \"GroupGUID\": \"${$function_parms.group}\", \"Guid\": \"${$remove}\"}"
-        }
-    }
-
-    Log info "Done"
-}
 function Idm-DistributionGroupMemberDelete {
     param (
         # Operations
