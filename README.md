@@ -4,6 +4,8 @@
 
 ## Data Tables
 - CAS Mailboxes
+- Distribution Groups
+- Distribution Groups Members
 - Mailboxes
 - Mailbox AutoReply Configurations
 - Mailbox Permissions
@@ -12,6 +14,10 @@
 ## Actions
 - CAS Mailboxes
     - Update
+- Distribution Group
+    - Create/Update/Delete
+- Distribution Group Member
+    - Add/Remove (No Role Model support)
 - Mailboxes
     - Enable/Update/Disable
 - Mailbox AutoReply Configurations
