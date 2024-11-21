@@ -5,6 +5,8 @@
 # dot-sourcing the IDM Generic PowerShell Script '../Generic.ps1'.
 #
 
+# Resolve any potential TLS issues
+[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
 
 #
 # https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/exchange-online-powershell-v2/exchange-online-powershell-v2?view=exchange-ps
@@ -780,15 +782,21 @@ function Idm-DistributionGroupsRead {
 			
             LogIO info "Get-MsExchangeDistributionGroup" -In @call_params
 			
-			# EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
-            $groups = Get-MsExchangeDistributionGroup @call_params | Select-Object $properties
-			$groups
+            if($Global:DistributionGroups.count -gt 0) {
+                foreach($group in $Global:DistributionGroups) {
+                    $group
+                }
+            } else {
+			    # EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
+                $groups = Get-MsExchangeDistributionGroup @call_params | Select-Object $properties
+			    $groups
 
-			# Push group GUIDs into a global collection
-			$Global:DistributionGroups.Clear()
-			foreach($grp in $groups) {
-				[void]$Global:DistributionGroups.Add( @{ Identity = $grp.$key } )
-			}
+			    # Push group GUIDs into a global collection
+			    $Global:DistributionGroups.Clear()
+			    foreach($grp in $groups) {
+				    [void]$Global:DistributionGroups.Add( $grp )
+			    }
+            }
         }
         catch {
             Log error "Failed: $_"
@@ -1020,7 +1028,6 @@ function Idm-DistributionGroupMembersRead {
         [string] $SystemParams,
         [string] $FunctionParams
     )
-
     Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
 	
 	$Class = 'DistributionGroupMember'
@@ -1042,8 +1049,6 @@ function Idm-DistributionGroupMembersRead {
 
         Open-MsExchangeSession $system_params
 
-        
-
         $properties = $function_params.properties
 
         if ($properties.length -eq 0) {
@@ -1058,12 +1063,17 @@ function Idm-DistributionGroupMembersRead {
             # https://learn.microsoft.com/en-us/powershell/module/exchange/get-distributiongroupmember?view=exchange-ps
             #
             # Cmdlet availability:
-            # v Cloud
-			$i = $Global:DistributionGroups.count
-			
+            # v Cloud			
+            if($i -lt 1) {
+                Log info "Retrieving Groups"
+                Idm-DistributionGroupsRead > $null
+            }
+
+            $i = $Global:DistributionGroups.count
+
 			foreach($grp in $Global:DistributionGroups) {
                 $call_params = @{
-                    Identity = $grp.Identity
+                    Identity = $grp.Guid
                     ResultSize = 'unlimited'
                 }
                 
@@ -1072,7 +1082,7 @@ function Idm-DistributionGroupMembersRead {
                 
                 foreach($member in $result) {
                     [PSCustomObject]@{
-                        GroupGuid = $grp.Identity
+                        GroupGuid = $grp.Guid
                         Guid = $member.Guid
                         RecipientType = $member.RecipientType
                     }
@@ -1982,4 +1992,3 @@ function Get-ClassMetaData {
         }
     )
 }
-
