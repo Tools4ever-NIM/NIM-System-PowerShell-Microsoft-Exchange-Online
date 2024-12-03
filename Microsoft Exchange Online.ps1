@@ -1709,22 +1709,8 @@ function Idm-MailboxPermissionsRead {
 			
             LogIO info "Get-EXOMailboxPermission" -In @call_params
 			
-			<# 2024-12-03 - T4e JA - Rework logic to make one Get Permission call instead of N calls.
-			$i = $Global:Mailboxes.count
-			$data = @()
-			foreach($mb in $Global:Mailboxes) {
-				$data += (Get-EXOMailboxPermission -Identity $mb.Identity @call_params | Select-Object $properties)
-				
-				if(($i -= 1) % 100 -eq 0) {
-					Log debug ("[Progress][$($Class)] $($i) remaining mailboxes to search")
-				}
-			}
-			
-			$data
-			#>
-			$data = $Global:Mailboxes.Identity | Get-EXOMailboxPermission @call_params
-			$data | Select-Object $Properties
-			
+	    $data = $Global:Mailboxes.Identity | Get-EXOMailboxPermission @call_params
+	    $data | Select-Object $Properties
         }
         catch {
             Log error "Failed: $_"
