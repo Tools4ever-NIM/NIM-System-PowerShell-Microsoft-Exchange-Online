@@ -1270,7 +1270,7 @@ function Idm-MailboxesRead {
             # Push mailbox GUIDs into a global collection
             $Global:Mailboxes.Clear()
             foreach($mb in $mailboxes) {
-                [void]$Global:Mailboxes.Add( @{ Identity = $mb.$key } )
+                [void]$Global:Mailboxes.Add( @{ Identity = $mb.$key; GUID = $mb.GUID } )
             }
         }
         catch {
@@ -1558,7 +1558,7 @@ function Idm-MailboxAutoReplyConfigurationsRead {
             
             LogIO info "Get-MsExchangeMailboxAutoReplyConfiguration" -In @call_params
             
-            $data = $Global:Mailboxes.Identity.GUID | Get-MsExchangeMailboxAutoReplyConfiguration @call_params
+            $data = $Global:Mailboxes.GUID.GUID | Get-MsExchangeMailboxAutoReplyConfiguration @call_params
             
             $data | Select-Object $properties
             
@@ -1700,8 +1700,8 @@ function Idm-MailboxPermissionsRead {
             # v Cloud
             
             LogIO info "Get-EXOMailboxPermission" -In @call_params
-            
-            $data = $Global:Mailboxes.Identity | Get-EXOMailboxPermission @call_params
+
+            $data = $Global:Mailboxes.GUID.GUID | Get-EXOMailboxPermission @call_params
             $data | Select-Object $Properties
         }
         catch {
