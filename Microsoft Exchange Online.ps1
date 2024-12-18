@@ -6,7 +6,7 @@
 #
 
 # Resolve any potential TLS issues
-[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 #
 # https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/exchange-online-powershell-v2/exchange-online-powershell-v2?view=exchange-ps
@@ -108,7 +108,7 @@ function Idm-SystemInfo {
                 name = 'sessions_idle_timeout'
                 type = 'textbox'
                 label = 'Session cleanup idle time (minutes)'
-                value = 5
+                value = 1
             }
         )
     }
@@ -783,6 +783,7 @@ function Idm-DistributionGroupsRead {
             LogIO info "Get-MsExchangeDistributionGroup" -In @call_params
             
             if($Global:DistributionGroups.count -gt 0) {
+                Log info "Using cached distribution groups"
                 foreach($group in $Global:DistributionGroups) {
                     $group
                 }
@@ -1059,16 +1060,14 @@ function Idm-DistributionGroupMembersRead {
         $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
         $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
 
+        # Check Cache State
+        EvaluateCacheState -Type 'DistributionGroups'
+
         try {
             # https://learn.microsoft.com/en-us/powershell/module/exchange/get-distributiongroupmember?view=exchange-ps
             #
             # Cmdlet availability:
             # v Cloud           
-            if($i -lt 1) {
-                Log info "Retrieving Groups"
-                Idm-DistributionGroupsRead > $null
-            }
-
             $i = $Global:DistributionGroups.count
 
             foreach($grp in $Global:DistributionGroups) {
@@ -1255,27 +1254,35 @@ function Idm-MailboxesRead {
         $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
         $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
 
-        try {
-            # https://learn.microsoft.com/en-us/powershell/module/exchange/get-exomailbox?view=exchange-ps
-            #
-            # Cmdlet availability:
-            # v Cloud
-            
-            LogIO info "Get-EXOMailbox" -In @call_params
-            
-            # EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
-            $mailboxes = Get-EXOMailbox @call_params | Select-Object $properties
-            $mailboxes
-            
-            # Push mailbox GUIDs into a global collection
-            $Global:Mailboxes.Clear()
-            foreach($mb in $mailboxes) {
-                [void]$Global:Mailboxes.Add( @{ Identity = $mb.$key; GUID = $mb.GUID } )
+        # Skip retrieval if already available, else return current dataset
+        if($Global:Mailboxes.count -lt 1) {
+            try {
+                # https://learn.microsoft.com/en-us/powershell/module/exchange/get-exomailbox?view=exchange-ps
+                #
+                # Cmdlet availability:
+                # v Cloud
+                
+                LogIO info "Get-EXOMailbox" -In @call_params
+                
+                # EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
+                $mailboxes = Get-EXOMailbox @call_params | Select-Object $properties
+                $mailboxes
+                
+                # Push mailbox GUIDs into a global collection
+                $Global:Mailboxes.Clear()
+                foreach($mb in $mailboxes) {
+                    [void]$Global:Mailboxes.Add($mb)
+                }
             }
-        }
-        catch {
-            Log error "Failed: $_"
-            Write-Error $_
+            catch {
+                Log error "Failed: $_"
+                Write-Error $_
+            }
+        } else { 
+            Log info "Using cached mailboxes"
+            foreach($mbx in $Global:Mailboxes) {
+                $mbx
+            }
         }
     }
 
@@ -1549,6 +1556,9 @@ function Idm-MailboxAutoReplyConfigurationsRead {
         $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
         $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
 
+        # Check Cache State
+        EvaluateCacheState -Type 'Mailboxes'
+
         try {
             # https://learn.microsoft.com/en-us/powershell/module/exchange/get-mailboxautoreplyconfiguration?view=exchange-ps
             #
@@ -1692,6 +1702,9 @@ function Idm-MailboxPermissionsRead {
         # Assure key is the first column
         $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
         $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
+
+        # Check Cache State
+        EvaluateCacheState -Type 'Mailboxes'
 
         try {
             # https://learn.microsoft.com/en-us/powershell/module/exchange/get-exomailboxpermission?view=exchange-ps
@@ -1973,4 +1986,20 @@ function Get-ClassMetaData {
             value = ($Global:Properties.$Class | Where-Object { $_.options.Contains('default') }).name
         }
     )
+}
+
+function EvaluateCacheState {
+    param (
+        [string] $Type
+    )
+
+    if( ($Type -eq 'Mailboxes' -or $Type -eq '*') -and $Global:Mailboxes.count -lt 1) {
+        Log info "Refreshing Mailboxes Cache"
+        Idm-MailboxesRead | Out-Null
+    }
+
+    if(($Type -eq 'DistributionGroups' -or $Type -eq '*') -and $Global:DistributionGroups.count -lt 1) {
+        Log info "Refreshing Distribution Groups Cache"
+        Idm-DistributionGroupsRead | Out-Null
+    }
 }
