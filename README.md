@@ -17,7 +17,7 @@
 - Distribution Group
     - Create/Update/Delete
 - Distribution Group Member
-    - Add/Remove (No Role Model support)
+    - Add/Remove
 - Mailboxes
     - Enable/Update/Disable
 - Mailbox AutoReply Configurations
