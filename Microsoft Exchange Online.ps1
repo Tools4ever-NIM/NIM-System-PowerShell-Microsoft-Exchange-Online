@@ -79,7 +79,7 @@ function Idm-SystemInfo {
         [string] $ConnectionParams
     )
 
-    Log info "-Connection=$Connection -TestConnection=$TestConnection -Configuration=$Configuration -ConnectionParams='$ConnectionParams'"
+    Log verbose "-Connection=$Connection -TestConnection=$TestConnection -Configuration=$Configuration -ConnectionParams='$ConnectionParams'"
     
     if ($Connection) {
         @(
@@ -152,7 +152,7 @@ function Idm-SystemInfo {
         )
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -611,7 +611,7 @@ function Idm-CASMailboxesRead {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'CASMailbox'
 
     if ($GetMeta) {
@@ -671,7 +671,7 @@ function Idm-CASMailboxesRead {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -684,7 +684,7 @@ function Idm-CASMailboxSet {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'CASMailbox'
 
     if ($GetMeta) {
@@ -744,7 +744,7 @@ function Idm-CASMailboxSet {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupsRead {
@@ -756,7 +756,7 @@ function Idm-DistributionGroupsRead {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'DistributionGroup'
 
     if ($GetMeta) {
@@ -799,7 +799,7 @@ function Idm-DistributionGroupsRead {
             LogIO info "Get-MsExchangeDistributionGroup" -In @call_params
             
             if($Global:DistributionGroups.count -gt 0) {
-                Log info "Using cached distribution groups"
+                Log verbose "Using cached distribution groups"
                 foreach($group in $Global:DistributionGroups) {
                     $group
                 }
@@ -821,7 +821,7 @@ function Idm-DistributionGroupsRead {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupCreate {
@@ -833,7 +833,7 @@ function Idm-DistributionGroupCreate {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'DistributionGroup'
     
     if ($GetMeta) {
@@ -888,7 +888,7 @@ function Idm-DistributionGroupCreate {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupUpdate {
@@ -900,7 +900,7 @@ function Idm-DistributionGroupUpdate {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'DistributionGroup'
     
     if ($GetMeta) {
@@ -961,7 +961,7 @@ function Idm-DistributionGroupUpdate {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupDelete {
@@ -973,7 +973,7 @@ function Idm-DistributionGroupDelete {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'DistributionGroup'
 
     if ($GetMeta) {
@@ -1034,7 +1034,7 @@ function Idm-DistributionGroupDelete {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupMembersRead {
@@ -1045,7 +1045,7 @@ function Idm-DistributionGroupMembersRead {
         [string] $SystemParams,
         [string] $FunctionParams
     )
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
 
     $Class = 'DistributionGroupMember'
 
@@ -1114,7 +1114,7 @@ function Idm-DistributionGroupMembersRead {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupMemberCreate {
@@ -1126,7 +1126,7 @@ function Idm-DistributionGroupMemberCreate {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
 
     if ($GetMeta) {
         #
@@ -1167,7 +1167,7 @@ function Idm-DistributionGroupMemberCreate {
         $rv
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-DistributionGroupMemberDelete {
@@ -1179,7 +1179,7 @@ function Idm-DistributionGroupMemberDelete {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
 
     if ($GetMeta) {
         #
@@ -1215,7 +1215,7 @@ function Idm-DistributionGroupMemberDelete {
         LogIO info "Remove-MsExchangeDistributionGroupMember"
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 function Idm-MailboxesRead {
@@ -1227,7 +1227,7 @@ function Idm-MailboxesRead {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'Mailbox'
 
     if ($GetMeta) {
@@ -1295,14 +1295,14 @@ function Idm-MailboxesRead {
                 Write-Error $_
             }
         } else { 
-            Log info "Using cached mailboxes"
+            Log verbose "Using cached mailboxes"
             foreach($mbx in $Global:Mailboxes) {
                 $mbx | Select-Object $properties
             }
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1315,7 +1315,7 @@ function Idm-MailboxEnable {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'Mailbox'
 
     if ($GetMeta) {
@@ -1373,7 +1373,7 @@ function Idm-MailboxEnable {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1386,7 +1386,7 @@ function Idm-MailboxSet {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'Mailbox'
 
     if ($GetMeta) {
@@ -1446,7 +1446,7 @@ function Idm-MailboxSet {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1459,7 +1459,7 @@ function Idm-MailboxDisable {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'Mailbox'
 
     if ($GetMeta) {
@@ -1520,7 +1520,7 @@ function Idm-MailboxDisable {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1533,7 +1533,7 @@ function Idm-MailboxAutoReplyConfigurationsRead {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     
     $Class = 'MailboxAutoReplyConfiguration'
 
@@ -1595,7 +1595,7 @@ function Idm-MailboxAutoReplyConfigurationsRead {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1608,7 +1608,7 @@ function Idm-MailboxAutoReplyConfigurationSet {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     
     $Class = 'MailboxAutoReplyConfiguration'
     
@@ -1667,7 +1667,7 @@ function Idm-MailboxAutoReplyConfigurationSet {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1680,7 +1680,7 @@ function Idm-MailboxPermissionsRead {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     
     $Class = 'MailboxPermission'
 
@@ -1739,7 +1739,7 @@ function Idm-MailboxPermissionsRead {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1752,7 +1752,7 @@ function Idm-MailboxPermissionAdd {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'MailboxPermission'
 
     if ($GetMeta) {
@@ -1812,7 +1812,7 @@ function Idm-MailboxPermissionAdd {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 
@@ -1825,7 +1825,7 @@ function Idm-MailboxPermissionRemove {
         [string] $FunctionParams
     )
 
-    Log info "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
     $Class = 'MailboxPermission'
     
     if ($GetMeta) {
@@ -1886,7 +1886,7 @@ function Idm-MailboxPermissionRemove {
         }
     }
 
-    Log info "Done"
+    Log verbose "Done"
 }
 
 #
@@ -1916,7 +1916,7 @@ function Open-MsExchangeSession {
         #Log debug "Reusing MsExchangePSSession"
     }
     else {
-        Log info "Opening ExchangeOnline session '$connection_string'"
+        Log verbose "Opening ExchangeOnline session '$connection_string'"
 
         $params = Copy-Object $connection_params
         $params.Certificate = Nim-GetCertificate $connection_params.certificate
@@ -1929,16 +1929,16 @@ function Open-MsExchangeSession {
             Write-Error $_
         }
 
-        Log info "Done"
+        Log verbose "Done"
     }
 }
 
 
 function Close-MsExchangeSession {
     if (Get-ConnectionInformation | ? { $_.State -eq 'Connected' }) {
-        Log info "Closing ExchangeOnline session"
+        Log verbose "Closing ExchangeOnline session"
         Disconnect-ExchangeOnline -Confirm:$false
-        Log info "Done"
+        Log verbose "Done"
     }
 }
 
@@ -2010,12 +2010,12 @@ function EvaluateCacheState {
     )
 
     if( ($Type -eq 'Mailboxes' -or $Type -eq '*') -and $Global:Mailboxes.count -lt 1) {
-        Log info "Refreshing Mailboxes Cache"
+        Log verbose "Refreshing Mailboxes Cache"
         Idm-MailboxesRead | Out-Null
     }
 
     if(($Type -eq 'DistributionGroups' -or $Type -eq '*') -and $Global:DistributionGroups.count -lt 1) {
-        Log info "Refreshing Distribution Groups Cache"
+        Log verbose "Refreshing Distribution Groups Cache"
         Idm-DistributionGroupsRead | Out-Null
     }
 }
