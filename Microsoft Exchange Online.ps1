@@ -1,3 +1,4 @@
+# version: 1.4.1
 #
 # Microsoft Exchange Online.ps1 - IDM System PowerShell Script for Microsoft Exchange Online Services.
 #
@@ -584,11 +585,12 @@ $Properties = @{
         @{ name = 'AccessRights';       options = @('default','add','remove')   }
         @{ name = 'Deny';               options = @('default')                  }
         @{ name = 'DomainController';   options = @('add')                      }
-        @{ name = 'Identity';           options = @('default','key')            }
+        @{ name = 'Identity';           options = @('default','add','remove')   }
         @{ name = 'InheritanceType';    options = @('default','add')            }
         @{ name = 'IsInherited';        options = @('default')                  }
         @{ name = 'User';               options = @('default','add','remove')   }
         @{ name = 'Owner';              options = @('add')                      }
+		@{ name = 'ID';           options = @('default','key')            }
     )
 }
 
@@ -1731,7 +1733,37 @@ function Idm-MailboxPermissionsRead {
             LogIO info "Get-EXOMailboxPermission" -In @call_params
 
             $data = $Global:Mailboxes.GUID.GUID | Get-EXOMailboxPermission @call_params
-            $data | Select-Object $Properties
+
+			foreach ($item in $data) {
+                # Convert the selected fields to JSON
+                $json = $item | ConvertTo-Json -Depth 10 -Compress
+
+                # Hash the JSON string
+                $sha256 = [System.Security.Cryptography.SHA256]::Create()
+                $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+                $hash = $sha256.ComputeHash($bytes)
+                $key = [BitConverter]::ToString($hash) -replace '-', ''
+
+                # Create new object with hashed ID
+                $newItem = [PSCustomObject]@{
+                    ID = $key
+                }
+
+                # Add selected properties to the new object
+                foreach ($prop in $properties) {
+                    try {
+                        $value = $item.$prop
+                        $newItem | Add-Member -MemberType NoteProperty -Name $prop -Value $value
+                    }
+                    catch {
+                        Log warn "Property '$prop' not found on item or failed to add: $_"
+                    }
+                }
+
+                # Output the new object
+                $newItem
+            }
+
         }
         catch {
             Log error "Failed: $_"
@@ -1763,9 +1795,9 @@ function Idm-MailboxPermissionAdd {
         @{
             semantics = 'create'
             parameters = @(
-                @{ name = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name; allowance = 'mandatory' }
-
-                $Global:Properties.$Class | Where-Object { !$_.options.Contains('key') -and !$_.options.Contains('add') } | ForEach-Object {
+                @{ name = 'Identity'; allowance = 'mandatory' }
+            
+                $Global:Properties.$Class | Where-Object { $_.options.Contains('key') -or !$_.options.Contains('add') } | ForEach-Object {
                     @{ name = $_.name; allowance = 'prohibited' }
                 }
 
@@ -1783,16 +1815,8 @@ function Idm-MailboxPermissionAdd {
 
         Open-MsExchangeSession $system_params
 
-        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
-
-        $call_params = @{
-            Identity = $function_params.$key
-        }
-        
-        $function_params.Remove($key)
-
         $call_params += $function_params
-
+		
         try {
             # https://docs.microsoft.com/en-us/powershell/module/exchange/mailboxes/add-mailboxpermission?view=exchange-ps
             #
@@ -1801,10 +1825,24 @@ function Idm-MailboxPermissionAdd {
             # v Cloud
 
             LogIO info "Add-MsExchangeMailboxPermission" -In @call_params
-                $rv = Add-MsExchangeMailboxPermission @call_params
-            LogIO info "Add-MsExchangeMailboxPermission" -Out $rv
+				$rv = Add-MsExchangeMailboxPermission @call_params	
+                $json = $rv | ConvertTo-Json -Depth 10 -Compress
+				$sha256 = [System.Security.Cryptography.SHA256]::Create()
+				$bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+				$hash = $sha256.ComputeHash($bytes)
+				$key = [BitConverter]::ToString($hash) -replace '-', ''
+				
+				
+				$returnObj = @{}
+				foreach($prop in $rv.PSObject.Properties) {
+					$returnObj[$prop.Name] = $prop.Value
+				}
+				
+				$returnObj['User'] = $function_params.User
+				$returnObj["ID"] = $key
+            LogIO info "Add-MsExchangeMailboxPermission" -Out $returnObj
 
-            $rv
+            $returnObj
         }
         catch {
             Log error "Failed: $_"
@@ -1851,7 +1889,7 @@ function Idm-MailboxPermissionRemove {
         # Execute function
         #
 
-        $system_params   = ConvertFrom-Json2 $SystemParams
+         $system_params   = ConvertFrom-Json2 $SystemParams
         $function_params = ConvertFrom-Json2 $FunctionParams
 
         Open-MsExchangeSession $system_params
@@ -1859,7 +1897,6 @@ function Idm-MailboxPermissionRemove {
         $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
 
         $call_params = @{
-            Identity = $function_params.$key
             Confirm  = $false   # Be non-interactive
         }
 
