@@ -1,4 +1,3 @@
-# version: 1.4.1
 #
 # Microsoft Exchange Online.ps1 - IDM System PowerShell Script for Microsoft Exchange Online Services.
 #
@@ -590,7 +589,7 @@ $Properties = @{
         @{ name = 'IsInherited';        options = @('default')                  }
         @{ name = 'User';               options = @('default','add','remove')   }
         @{ name = 'Owner';              options = @('add')                      }
-		@{ name = 'ID';           options = @('default','key')            }
+        @{ name = 'ID';           options = @('default','key')            }
     )
 }
 
@@ -802,13 +801,10 @@ function Idm-DistributionGroupsRead {
             
             if($Global:DistributionGroups.count -gt 0) {
                 Log verbose "Using cached distribution groups"
-                foreach($group in $Global:DistributionGroups) {
-                    $group
-                }
+                $groups = $Global:DistributionGroups
             } else {
                 # EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
-                $groups = Get-MsExchangeDistributionGroup @call_params | Select-Object $properties
-                $groups
+                $groups = Get-MsExchangeDistributionGroup @call_params
 
                 # Push group GUIDs into a global collection
                 $Global:DistributionGroups.Clear()
@@ -816,6 +812,9 @@ function Idm-DistributionGroupsRead {
                     [void]$Global:DistributionGroups.Add( $grp )
                 }
             }
+            # Return Data
+            $groups | Select-Object $properties
+
         }
         catch {
             Log error "Failed: $_"
@@ -1283,8 +1282,8 @@ function Idm-MailboxesRead {
                 LogIO info "Get-EXOMailbox" -In @call_params
                 
                 # EXO cmdlets cannot be prefixed because "EXO" is effectively a prefix already
-                $mailboxes = Get-EXOMailbox @call_params | Select-Object $properties
-                $mailboxes
+                $mailboxes = Get-EXOMailbox @call_params 
+                $mailboxes | Select-Object $properties
                 
                 # Push mailbox GUIDs into a global collection
                 $Global:Mailboxes.Clear()
@@ -1734,7 +1733,7 @@ function Idm-MailboxPermissionsRead {
 
             $data = $Global:Mailboxes.GUID.GUID | Get-EXOMailboxPermission @call_params
 
-			foreach ($item in $data) {
+            foreach ($item in $data) {
                 # Convert the selected fields to JSON
                 $json = $item | ConvertTo-Json -Depth 10 -Compress
 
@@ -1816,7 +1815,7 @@ function Idm-MailboxPermissionAdd {
         Open-MsExchangeSession $system_params
 
         $call_params += $function_params
-		
+        
         try {
             # https://docs.microsoft.com/en-us/powershell/module/exchange/mailboxes/add-mailboxpermission?view=exchange-ps
             #
@@ -1825,21 +1824,21 @@ function Idm-MailboxPermissionAdd {
             # v Cloud
 
             LogIO info "Add-MsExchangeMailboxPermission" -In @call_params
-				$rv = Add-MsExchangeMailboxPermission @call_params	
+                $rv = Add-MsExchangeMailboxPermission @call_params  
                 $json = $rv | ConvertTo-Json -Depth 10 -Compress
-				$sha256 = [System.Security.Cryptography.SHA256]::Create()
-				$bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
-				$hash = $sha256.ComputeHash($bytes)
-				$key = [BitConverter]::ToString($hash) -replace '-', ''
-				
-				
-				$returnObj = @{}
-				foreach($prop in $rv.PSObject.Properties) {
-					$returnObj[$prop.Name] = $prop.Value
-				}
-				
-				$returnObj['User'] = $function_params.User
-				$returnObj["ID"] = $key
+                $sha256 = [System.Security.Cryptography.SHA256]::Create()
+                $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+                $hash = $sha256.ComputeHash($bytes)
+                $key = [BitConverter]::ToString($hash) -replace '-', ''
+                
+                
+                $returnObj = @{}
+                foreach($prop in $rv.PSObject.Properties) {
+                    $returnObj[$prop.Name] = $prop.Value
+                }
+                
+                $returnObj['User'] = $function_params.User
+                $returnObj["ID"] = $key
             LogIO info "Add-MsExchangeMailboxPermission" -Out $returnObj
 
             $returnObj
