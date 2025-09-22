@@ -1,5 +1,3 @@
-# version: 1.4.2
-
 #
 # Microsoft Exchange Online.ps1 - IDM System PowerShell Script for Microsoft Exchange Online Services.
 #
