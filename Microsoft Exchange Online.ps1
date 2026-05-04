@@ -554,6 +554,20 @@ $Properties = @{
         @{ name = 'WhenSoftDeleted';                                                                    }
         @{ name = 'WindowsEmailAddress';                        options = @('set')                      }
         @{ name = 'WindowsLiveID';                                                                      }
+
+        ##Uncached AutoReply
+        @{ name = 'AutoDeclineFutureRequestsWhenOOF';   options = @('setAR')        }
+        @{ name = 'AutoReplyState';                     options = @('setAR')        }
+        @{ name = 'CreateOOFEvent';                     options = @('setAR')        }
+        @{ name = 'DeclineAllEventsForScheduledOOF';    options = @('setAR')        }
+        @{ name = 'DeclineEventsForScheduledOOF';       options = @('setAR')        }
+        @{ name = 'DeclineMeetingMessage';              options = @('setAR')        }
+        @{ name = 'EndTime';                            options = @('setAR')        }
+        @{ name = 'ExternalAudience';                   options = @('setAR')        }
+        @{ name = 'ExternalMessage';                    options = @('setAR')        }
+        @{ name = 'InternalMessage';                    options = @('setAR')        }
+        @{ name = 'OOFEventSubject';                    options = @('setAR')        }
+        @{ name = 'StartTime';                          options = @('setAR')        }
     )
     MailboxAutoReplyConfiguration = @(
         @{ name = 'AutoDeclineFutureRequestsWhenOOF';   options = @('default','set')        }
@@ -1440,6 +1454,82 @@ function Idm-MailboxSet {
             LogIO info "Set-MsExchangeMailbox" -Out $rv
 
             $rv = Get-EXOMailbox -Identity $function_params.$key
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log verbose "Done"
+}
+
+function Idm-MailboxSetautoreplyuncached {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    
+    $Class = 'Mailbox'
+    
+    if ($GetMeta) {
+        #
+        # Get meta data
+        #
+
+        @{
+            parameters = @(
+                ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }) | ForEach-Object {
+                    @{ name = $_.name;  allowance = 'mandatory' }
+                }
+
+                ($Global:Properties.$Class | Where-Object { $_.options.Contains('setAR')  }) | ForEach-Object {
+                    @{ name = $_.name;  allowance = 'optional' }
+                }
+
+                $Global:Properties.$Class | Where-Object { !$_.options.Contains('setAR') -and !$_.options.Contains('key') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'prohibited' }
+                }
+            )
+        }
+    }
+    else {
+        #
+        # Execute function
+        #
+
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+        
+        $call_params = @{
+            Identity = $function_params.$key
+        }
+        
+        $function_params.Remove($key)
+        
+        $call_params += $function_params
+        
+        try {
+            # https://learn.microsoft.com/en-us/powershell/module/exchange/set-mailboxautoreplyconfiguration?view=exchange-ps
+            #
+            # Cmdlet availability:
+            # v On-premises
+            # v Cloud
+
+            LogIO info "Set-MsExchangeMailboxAutoReplyConfiguration" -In @call_params
+                $rv = Set-MsExchangeMailboxAutoReplyConfiguration @call_params
+            LogIO info "Set-MsExchangeMailboxAutoReplyConfiguration" -Out $rv
+
+            $rv
         }
         catch {
             Log error "Failed: $_"
