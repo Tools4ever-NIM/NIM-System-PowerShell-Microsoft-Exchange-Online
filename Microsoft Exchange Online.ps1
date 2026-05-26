@@ -1,3 +1,4 @@
+# version: 1.4.3
 #
 # Microsoft Exchange Online.ps1 - IDM System PowerShell Script for Microsoft Exchange Online Services.
 #
@@ -265,13 +266,14 @@ $Properties = @{
         @{ name = 'DistinguishedName';                                                                  }
         @{ name = 'EmailAddresses';                             options = @('set')                      }
         @{ name = 'EmailAddressPolicyEnabled';                                                          }
-        @{ name = 'ExchangeObjectId';                                                                   }
+        @{ name = 'ExchangeObjectId';                           options = @('default')                  }
         @{ name = 'ExchangeVersion';                                                                    }
         @{ name = 'ExtensionCustomAttribute1';                  options = @('set')                      }
         @{ name = 'ExtensionCustomAttribute2';                  options = @('set')                      }
         @{ name = 'ExtensionCustomAttribute3';                  options = @('set')                      }
         @{ name = 'ExtensionCustomAttribute4';                  options = @('set')                      }
         @{ name = 'ExtensionCustomAttribute5';                  options = @('set')                      }
+        @{ name = 'ExternalDirectoryObjectId';                  options = @('default')                  }
         @{ name = 'GrantSendOnBehalfTo';                        options = @('set')                      }
         @{ name = 'GroupType';                                                                          }
         @{ name = 'Guid';                                       options = @('default','key')            }       
@@ -310,6 +312,7 @@ $Properties = @{
         @{ name = 'RejectMessagesFromSendersOrMembers';         options = @('set')                      }
         @{ name = 'ReportToManagerEnabled';                                                             }
         @{ name = 'ReportToOriginatorEnabled';                                                          }
+        @{ name = 'RequireSenderAuthenticationEnabled';                                                 }
         @{ name = 'SamAccountName';                             options = @('create','set')             }
         @{ name = 'SendModerationNotifications';                options = @('create','set')             }
         @{ name = 'SendOofMessageToOriginatorEnabled';          options = @('set')                      }
@@ -323,6 +326,8 @@ $Properties = @{
     )
     DistributionGroupMember = @(
         @{ name = 'GroupGuid';                      options = @('default','set')        }
+        @{ name = 'GroupExchangeObjectId';                      options = @('default')        }
+        @{ name = 'GroupExternalDirectoryObjectId';                      options = @('default')        }
         @{ name = 'Guid';           options = @('default','set')                        }
         @{ name = 'RecipientType';                                                      }
     )
@@ -1099,6 +1104,8 @@ function Idm-DistributionGroupMembersRead {
                 foreach($member in $result) {
                     [PSCustomObject]@{
                         GroupGuid = $grp.Guid
+                        GroupExchangeObjectId = $grp.ExchangeObjectId
+                        GroupExternalDirectoryObjectId = $grp.ExternalDirectoryObjectId
                         Guid = $member.Guid
                         RecipientType = $member.RecipientType
                     }
