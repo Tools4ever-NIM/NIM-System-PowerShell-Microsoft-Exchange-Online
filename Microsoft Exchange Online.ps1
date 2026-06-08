@@ -266,7 +266,7 @@ $Properties = @{
         @{ name = 'DistinguishedName';                                                                  }
         @{ name = 'EmailAddresses';                             options = @('set')                      }
         @{ name = 'EmailAddressPolicyEnabled';                                                          }
-        @{ name = 'ExchangeObjectId';                           options = @('default')                  }
+        @{ name = 'ExchangeObjectId';                           options = @('default','key')                  }
         @{ name = 'ExchangeVersion';                                                                    }
         @{ name = 'ExtensionCustomAttribute1';                  options = @('set')                      }
         @{ name = 'ExtensionCustomAttribute2';                  options = @('set')                      }
@@ -276,7 +276,7 @@ $Properties = @{
         @{ name = 'ExternalDirectoryObjectId';                  options = @('default')                  }
         @{ name = 'GrantSendOnBehalfTo';                        options = @('set')                      }
         @{ name = 'GroupType';                                                                          }
-        @{ name = 'Guid';                                       options = @('default','key')            }       
+        @{ name = 'Guid';                                       options = @('default')            }       
         @{ name = 'HiddenFromAddressListsEnabled';              options = @('set')                      }
         @{ name = 'HiddenGroupMembershipEnabled';               options = @('create','set')             }
         @{ name = 'Id';                                         options = @('default')                  }
