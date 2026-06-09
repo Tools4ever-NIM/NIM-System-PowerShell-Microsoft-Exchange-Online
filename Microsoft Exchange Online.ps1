@@ -1143,7 +1143,8 @@ function Idm-DistributionGroupMemberCreate {
         @{
             semantics = 'create'
             parameters = @(
-                @{ name = "GroupGuid";  allowance = 'mandatory'  }
+                @{ name = "GroupExchangeObjectId";  allowance = 'optional'  }
+                @{ name = "GroupGuid";  allowance = 'optional'  }
                 @{ name = "Guid"; allowance = 'mandatory'  }
                 @{ name = '*';      allowance = 'prohibited' }
             )
@@ -1157,16 +1158,17 @@ function Idm-DistributionGroupMemberCreate {
         $function_params = ConvertFrom-Json2 $FunctionParams
 
         Open-MsExchangeSession $system_params
+        $Identity = if($function_params["GroupExchangeObjectId"].length -gt 0) { $function_params["GroupExchangeObjectId"] } else { $function_params["GroupGuid"] }
 
         $call_params = @{
-            Identity = $function_params["GroupGuid"]
+            Identity = $Identity
             Member = $function_params["Guid"]
         }
         LogIO info "Add-MsExchangeDistributionGroupMember" -In @call_params
                Add-MsExchangeDistributionGroupMember @call_params -Confirm:$false >$null 2>&1
         
         $rv = [PSCustomObject]@{
-            GroupGuid = $function_params["GroupGuid"]
+            GroupExchangeObjectId = $Identity
             Guid = $function_params["Guid"]
         }
         LogIO info "Add-MsExchangeDistributionGroupMember" -Out $rv
@@ -1196,7 +1198,8 @@ function Idm-DistributionGroupMemberDelete {
         @{
             semantics = 'delete'
             parameters = @(
-                @{ name = "GroupGuid";  allowance = 'mandatory'  }
+                @{ name = "GroupExchangeObjectId";  allowance = 'optional'  }
+                @{ name = "GroupGuid";  allowance = 'optional'  }
                 @{ name = "Guid"; allowance = 'mandatory'  }
                 @{ name = '*';      allowance = 'prohibited' }
             )
@@ -1213,7 +1216,7 @@ function Idm-DistributionGroupMemberDelete {
         Open-MsExchangeSession $system_params
 
         $call_params= @{
-            Identity = $function_params["GroupGuid"]
+            Identity = if($function_params["GroupExchangeObjectId"].length -gt 0) { $function_params["GroupExchangeObjectId"] } else { $function_params["GroupGuid"] }
             Member = $function_params["Guid"]
         }
 
