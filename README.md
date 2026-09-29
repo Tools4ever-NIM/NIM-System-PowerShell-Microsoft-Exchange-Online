@@ -1,5 +1,7 @@
 # Microsoft Exchange Online
 
+Read the [Microsoft Exchange Online integration documentation](https://docs.nimsuite.com/en/integrations/microsoft-exchange-online) for connector details and related guides.
+
 <img src="https://github.com/Tools4ever-NIM/NIM-System-PowerShell-Microsoft-Exchange-Online/assets/24281600/89e7d67c-27e6-4c39-9a6c-10825a4d8840" width="256px" />
 
 ## Data Tables
