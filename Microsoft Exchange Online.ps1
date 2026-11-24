@@ -166,6 +166,16 @@ function Idm-OnUnload {
 #
 
 $Properties = @{
+    MobileDevice = @(
+        @{ name = 'Identity';      options = @('default') }
+        @{ name = 'DeviceId';      options = @('default')       }
+        @{ name = 'DeviceType';    options = @('default')       }
+        @{ name = 'FriendlyName';  options = @('default')       }
+        @{ name = 'Guid';          options = @('default','key')       }
+        @{ name = 'Mailbox';       options = @('default')       }
+        @{ name = 'WhenChanged';                                }
+        @{ name = 'WhenCreated';                                }
+    )
     CASMailbox = @(
         @{ name = 'ActiveSyncAllowedDeviceIDs';                 options = @('set')              }
         @{ name = 'ActiveSyncBlockedDeviceIDs';                 options = @('set')              }
@@ -229,6 +239,7 @@ $Properties = @{
         @{ name = 'ShowGalAsDefaultView';                       options = @('set')              }
         @{ name = 'SmtpClientAuthenticationDisabled';           options = @('set')              }
         @{ name = 'UniversalOutlookEnabled';                    options = @('set')              }
+        @{ name = 'OneWinNativeOutlookEnabled';                 options = @('set')              }
         @{ name = 'WhenChanged';                                                                }
         @{ name = 'WhenChangedUTC';                                                             }
         @{ name = 'WhenCreated';                                                                }
@@ -679,6 +690,102 @@ function Idm-CASMailboxesRead {
     Log verbose "Done"
 }
 
+function Idm-MobileDevicesRead {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    $Class = 'MobileDevice'
+
+    if ($GetMeta) {
+        Get-ClassMetaData -SystemParams $SystemParams -Class $Class -CanFilter $true
+    }
+    else {
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $call_params = @{ ResultSize = 'Unlimited' }
+        if ($function_params.filter.length -gt 0) {
+            $call_params.Filter = $function_params.filter
+        }
+
+        $properties = $function_params.properties
+        if ($properties.length -eq 0) {
+            $properties = ($Global:Properties.$Class | Where-Object { $_.options.Contains('default') }).name
+        }
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+        $properties = @($key) + @($properties | Where-Object { $_ -ne $key })
+
+        try {
+            LogIO info "Get-MobileDevice" -In @call_params
+            Get-MsExchangeMobileDevice @call_params | Select-Object $properties
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log verbose "Done"
+}
+
+function Idm-MobileDeviceDelete {
+    param (
+        # Operations
+        [switch] $GetMeta,
+        # Parameters
+        [string] $SystemParams,
+        [string] $FunctionParams
+    )
+
+    Log verbose "-GetMeta=$GetMeta -SystemParams='$SystemParams' -FunctionParams='$FunctionParams'"
+    $Class = 'MobileDevice'
+
+    if ($GetMeta) {
+        @{
+            semantics = 'delete'
+            parameters = @(
+                @{ name = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name; allowance = 'mandatory' }
+                $Global:Properties.$Class | Where-Object { !$_.options.Contains('key') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'prohibited' }
+                }
+            )
+        }
+    }
+    else {
+        $system_params   = ConvertFrom-Json2 $SystemParams
+        $function_params = ConvertFrom-Json2 $FunctionParams
+
+        Open-MsExchangeSession $system_params
+
+        $key = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name
+        $call_params = @{
+            Identity = $function_params.$key
+            Confirm  = $false
+        }
+
+        try {
+            LogIO info "Remove-MobileDevice" -In @call_params
+            $rv = Remove-MsExchangeMobileDevice @call_params
+            LogIO info "Remove-MobileDevice" -Out $rv
+            $rv
+        }
+        catch {
+            Log error "Failed: $_"
+            Write-Error $_
+        }
+    }
+
+    Log verbose "Done"
+}
+
 
 function Idm-CASMailboxSet {
     param (
@@ -702,11 +809,13 @@ function Idm-CASMailboxSet {
             parameters = @(
                 @{ name = ($Global:Properties.$Class | Where-Object { $_.options.Contains('key') }).name; allowance = 'mandatory' }
 
+                $Global:Properties.$Class | Where-Object { !$_.options.Contains('key') -and $_.options.Contains('set') } | ForEach-Object {
+                    @{ name = $_.name; allowance = 'optional' }
+                }
+
                 $Global:Properties.$Class | Where-Object { !$_.options.Contains('key') -and !$_.options.Contains('set') } | ForEach-Object {
                     @{ name = $_.name; allowance = 'prohibited' }
                 }
-
-               #@{ name = '*'; allowance = 'optional' }
             )
         }
     }
